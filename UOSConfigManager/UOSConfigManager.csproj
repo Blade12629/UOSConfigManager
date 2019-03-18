@@ -86,7 +86,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UOS\Configs.cs" />
     <Compile Include="UOS\LauncherXML.cs" />
     <Compile Include="UOS\ProfileXML.cs" />
     <Compile Include="UOS\UOSReader.cs" />

@@ -515,8 +515,8 @@ namespace UOSConfigManager
             if (enumerable == null || action == null)
                 return;
 
-            for (int i = 0; i < enumerable.Count(); i++)
-                action(enumerable.ElementAt(i));
+            foreach (T ienum in enumerable)
+                action(ienum);
         }
     }
 }
