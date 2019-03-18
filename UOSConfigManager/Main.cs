@@ -34,6 +34,18 @@ namespace UOSConfigManager
             InitializeComponent();
         }
 
+        [Flags]
+        public enum Changed
+        {
+            Friends = 1,
+            Hotkeys = 2,
+            Macros = 4,
+            Scavenger = 8,
+            Counters = 16,
+            Dresslist = 32,
+            Client = 64
+        }
+
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
