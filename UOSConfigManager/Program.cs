@@ -18,8 +18,8 @@ namespace UOSConfigManager
     class Program
     {
         public static CFG.Config Config;
-        public static string UOSStandardPath = @"C:\Program Files (x86)\UOS\Profiles";
-        public static string ConfigFile = Directory.GetCurrentDirectory() + @"\config.json";
+        public static readonly string UOSStandardPath = @"C:\Program Files (x86)\UOS\Profiles";
+        public static readonly string ConfigFile = Directory.GetCurrentDirectory() + @"\config.json";
         #region delegates
         public delegate void ConsoleMessage(string Message, params string[] args);
         public delegate UOS.XML.Profile.Profile LoadProfileDelegate(int ProfileID);
