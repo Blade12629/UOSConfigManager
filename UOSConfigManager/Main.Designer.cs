@@ -98,7 +98,6 @@
             this.tab_Author = new System.Windows.Forms.TabPage();
             this.label9 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -773,7 +772,6 @@
             this.tab_Author.BackColor = System.Drawing.SystemColors.ControlText;
             this.tab_Author.Controls.Add(this.label9);
             this.tab_Author.Controls.Add(this.label3);
-            this.tab_Author.Controls.Add(this.label2);
             this.tab_Author.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.tab_Author.Location = new System.Drawing.Point(4, 22);
             this.tab_Author.Name = "tab_Author";
@@ -799,15 +797,6 @@
             this.label3.Size = new System.Drawing.Size(72, 13);
             this.label3.TabIndex = 2;
             this.label3.Text = "Author: Skyfly";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(348, 182);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(88, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Work in Progress";
             // 
             // openFileDialog1
             // 
@@ -916,7 +905,6 @@
         private System.Windows.Forms.TabPage tab_Author;
         private System.Windows.Forms.TabPage tab_Dresslist;
         private System.Windows.Forms.TabPage tab_Client;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox tb_ClientExe;
         private System.Windows.Forms.Label label7;
