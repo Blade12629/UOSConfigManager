@@ -9,4 +9,5 @@ Required: .Net Framework 4.7
 3. Have fun
 
 (Optional)
+
 4. Open/create sk.txt in the config manager directory and add virtual keys with no translated key (pattern: Key|Defintion with spaces enabled)
