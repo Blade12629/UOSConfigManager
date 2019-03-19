@@ -28,7 +28,7 @@ namespace UOSConfigManager.UOS.XML.Launcher
     public class Installs
     {
         [XmlElement(ElementName = "path")]
-        public Path Path { get; set; }
+        public List<Path> Path { get; set; }
     }
 
     [XmlRoot(ElementName = "clients")]

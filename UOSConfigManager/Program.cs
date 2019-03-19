@@ -37,7 +37,7 @@ namespace UOSConfigManager
         public static Dictionary<string, string> SpecialKeys;
 
         #region const vars
-        private const string UOSInstaller = "http://uos-update.github.io/UOS_Latest.exe";
+        public const string UOSInstaller = "http://uos-update.github.io/UOS_Latest.exe";
         public const string VM = "https://vetus-mundus.de/forum/";
         public const string UOGuide = "http://www.uoguide.com/Main_Page";
         public const string EasyUO = "http://www.easyuo.com/"; //Download only if registered
@@ -295,17 +295,7 @@ namespace UOSConfigManager
             DirectoryInfo dinfos = dinfo.Parent;
             System.Diagnostics.Process.Start(dinfo.FullName + @"\UOS.exe");
         }
-
-        public static async Task InstallUOS(string path)
-        {
-            CMSG("Downloading UOS");
-            using (System.Net.WebClient wc = new System.Net.WebClient())
-                wc.DownloadFile(UOSInstaller, path);
-
-            CMSG("Starting UOS Installer");
-            System.Diagnostics.Process.Start(path);
-        }
-
+        
         public static UOS.XML.Profile.Profile LoadProfile(int ProfileID)
         {
             UOS.UOSReader reader = new UOS.UOSReader(profiles.ElementAt(ProfileID));

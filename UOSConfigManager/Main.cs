@@ -28,22 +28,28 @@ namespace UOSConfigManager
         private UOS.XML.Launcher.Launcher launcher;
         private int ProfileID;
         private LargeAddressAware.LAA.LaaFile client;
+        private Changed ChangedElements;
+        private bool LoadedProfile;
         
         public Main()
         {
             InitializeComponent();
+            ChangedElements = Changed.None;
+            LoadedProfile = false;
         }
 
         [Flags]
         public enum Changed
         {
+            None = 0,
             Friends = 1,
             Hotkeys = 2,
             Macros = 4,
             Scavenger = 8,
             Counters = 16,
             Dresslist = 32,
-            Client = 64
+            Object = 64,
+            Client = 128
         }
 
         protected override void OnShown(EventArgs e)
@@ -91,8 +97,12 @@ namespace UOSConfigManager
 
                     tb_host.Text = shard.Login;
                     tb_Port.Text = shard.Port.ToString();
-                    tb_ClientExe.Text = launcher.Clients.Path[1].Text;
-                    tb_ClientFolder.Text = launcher.Clients.Path[0].Text;
+
+                    int indexOf = launcher.Clients.Path.FindIndex(p => !string.IsNullOrEmpty(p.Last) && bool.Parse(p.Last));
+                    tb_ClientExe.Text = launcher.Clients.Path[indexOf].Text;
+                    cb_ClientExeEncryptionEnabled.Checked = bool.Parse(launcher.Clients.Path[indexOf].RemoveEncryption);
+                    indexOf = launcher.Installs.Path.FindIndex(p => !string.IsNullOrEmpty(p.Last) && bool.Parse(p.Last));
+                    tb_ClientFolder.Text = launcher.Clients.Path[indexOf].Text;
                 }
             }
 
@@ -149,6 +159,9 @@ namespace UOSConfigManager
 
             for (int i = 0; i < Program.profiles.Count(); i++)
                 grid_Profiles.Rows.Add(i, Program.profiles[i].Name, Program.profiles[i].FullName);
+
+
+            LoadedProfile = true;
         }
 
         public void LoadProfile(int ProfileID)
@@ -193,6 +206,8 @@ namespace UOSConfigManager
 
         private void lb_macros_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!LoadedProfile)
+                return;
             try
             {
                 UOS.XML.Profile.Macro macro = currentProfile.Macros.Macro.First(f => f.Name.Equals(lb_macros.SelectedItem.ToString()));
@@ -206,6 +221,8 @@ namespace UOSConfigManager
 
         private void lb_Dresslist_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!LoadedProfile)
+                return;
             try
             {
                 grid_Dress.Rows.Clear();
@@ -256,6 +273,7 @@ namespace UOSConfigManager
         private void b_ProfileReload_Click(object sender, EventArgs e)
         {
             cmessage("Reloading profile");
+            LoadedProfile = false;
             Program.Config.DefaultProfileID = Convert.ToInt32(NUD_ProfileDefaultID.Value);
             SaveConfig();
             cmessage($"Loading profile {Program.Config.DefaultProfileID}");
@@ -266,6 +284,8 @@ namespace UOSConfigManager
         
         private void b_UOSSetPath_Click(object sender, EventArgs e)
         {
+            if (!LoadedProfile)
+                return;
             try
             {
                 KeyValuePair<DialogResult, string> result = ShowDialog(Program.DialogType.Folder);
@@ -296,6 +316,259 @@ namespace UOSConfigManager
                 client.WriteCharacteristics(true);
 
             cb_LAAEnabled.Checked = client.LargeAddressAware;
+        }
+
+        private void grid_Friends_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Friends))
+                ChangedElements |= Changed.Friends;
+
+            Task.Run(async () =>
+            {
+                currentProfile.Friends.Friend.Clear();
+                foreach (DataGridViewRow row in grid_Friends.Rows)
+                    currentProfile.Friends.Friend.Add(new UOS.XML.Profile.Friend() { Text = row.Cells[0].Value.ToString(), Name = row.Cells[1].Value.ToString() });
+            });
+        }
+
+        private void grid_Hotkeys_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Hotkeys))
+                ChangedElements |= Changed.Hotkeys;
+
+            Task.Run(async () =>
+            {
+                currentProfile.Hotkeys.Hotkey.Clear();
+                foreach (DataGridViewRow row in grid_Hotkeys.Rows)
+                    currentProfile.Hotkeys.Hotkey.Add(new UOS.XML.Profile.Hotkey() { Key = row.Cells[0].Value.ToString(), Pass = row.Cells[2].Value.ToString(), Action = row.Cells[3].Value.ToString(), Param = row.Cells[4].Value.ToString() });
+            });
+        }
+
+        private void grid_Scavenger_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Scavenger))
+                ChangedElements |= Changed.Scavenger;
+
+            Task.Run(async () =>
+            {
+                currentProfile.Scavenger.Scavenge.Clear();
+                foreach (DataGridViewRow row in grid_Scavenger.Rows)
+                    currentProfile.Scavenger.Scavenge.Add(new UOS.XML.Profile.Scavenge() { Enabled = row.Cells[0].Value.ToString(), Graphic = row.Cells[1].Value.ToString(), Color = row.Cells[2].Value.ToString() });
+            });
+        }
+
+        private void grid_Counters_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Counters))
+                ChangedElements |= Changed.Counters;
+
+            Task.Run(async () =>
+            {
+                currentProfile.Counters.Counter.Clear();
+
+                foreach (DataGridViewRow row in grid_Objects.Rows)
+                    currentProfile.Counters.Counter.Add(new UOS.XML.Profile.Counter() { Format = row.Cells[0].Value.ToString(), Name = row.Cells[1].Value.ToString(), Graphic = row.Cells[2].Value.ToString(), Color = row.Cells[3].Value.ToString(), Enabled = row.Cells[4].Value.ToString(), Image = row.Cells[5].Value.ToString() });
+            });
+        }
+
+        private void grid_Dress_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            int indexOf = currentProfile.Dresslist.FindIndex(dl => dl.Name.Equals(lb_Dresslist.SelectedValue.ToString()));
+
+            if (indexOf == -1)
+                return;
+
+            if (!ChangedElements.HasFlag(Changed.Dresslist))
+                ChangedElements |= Changed.Dresslist;
+
+            Task.Run(async () =>
+            {
+                currentProfile.Dresslist[indexOf].Item.Clear();
+
+                for (int i = 0; i < grid_Dress.RowCount; i++)
+                {
+                    DataGridViewRow row = grid_Dress.Rows[i];
+                    currentProfile.Dresslist[indexOf].Item.Add(new UOS.XML.Profile.Item()
+                    {
+                        Text = row.Cells[0].Value.ToString(),
+                        Layer = row.Cells[1].Value.ToString(),
+                        Graphic = row.Cells[2].Value.ToString(),
+                        Amount = row.Cells[3].Value.ToString()
+                    });
+                }
+            });
+        }
+
+        private void grid_Objects_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Object))
+                ChangedElements |= Changed.Object;
+            
+            Task.Run(async () =>
+            {
+                currentProfile.Objects.Obj.Clear();
+
+                foreach (DataGridViewRow row in grid_Objects.Rows)
+                    currentProfile.Objects.Obj.Add(new UOS.XML.Profile.Obj() { Text = row.Cells[0].Value.ToString(), Name = row.Cells[1].Value.ToString() });
+            });
+        }
+
+        private void rtb_macro_TextChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            int indexOf = currentProfile.Macros.Macro.FindIndex(m => m.Name.Equals(lb_macros.SelectedValue.ToString()));
+
+            if (indexOf == -1)
+                return;
+
+            if (!ChangedElements.HasFlag(Changed.Macros))
+                ChangedElements |= Changed.Macros;
+
+            Task.Run(async () =>
+            {
+                string macro = rtb_macro.Text.Replace(Environment.NewLine, "");
+
+                currentProfile.Macros.Macro[indexOf].Text = macro;
+            });
+        }
+
+        private void cb_ScavengerEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Scavenger))
+                ChangedElements |= Changed.Scavenger;
+
+            currentProfile.Scavenger.Enabled = cb_ScavengerEnabled.Checked.ToString();
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if ((int)ChangedElements == 0)
+                return;
+
+            DialogResult result = MessageBox.Show(
+                "Exit without saving?",
+                "Are you sure?",
+                MessageBoxButtons.YesNo);
+
+            e.Cancel = (result == DialogResult.No);
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UOS.UOSWriter writer;
+
+            if (ChangedElements.HasFlag(Changed.Client))
+            {
+                writer = new UOS.UOSWriter(launcher, 0, UOS.UOSReader.ConfigType.Launcher);
+                Task.Run(async () =>
+                {
+                    cmessage.Invoke("Saving profile " + ProfileID);
+                    writer.Write();
+                    cmessage.Invoke("Saved profile " + ProfileID);
+                });
+            }
+            else
+            {
+                writer = new UOS.UOSWriter(currentProfile, ProfileID);
+                Task.Run(async () =>
+                {
+                    cmessage.Invoke("Saving config");
+                    writer.Write();
+                    cmessage.Invoke("Saved config");
+                });
+            }
+
+            MessageBox.Show("Save State", "Successfully saved!");
+        }
+
+        private void tb_host_TextChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Client))
+                ChangedElements |= Changed.Client;
+
+            int indexOf = launcher.Servers.Shard.FindIndex(s => !string.IsNullOrEmpty(s.Last) && bool.Parse(s.Last));
+
+            if (indexOf == -1)
+                return;
+
+            launcher.Servers.Shard[indexOf].Login = tb_host.Text;
+        }
+
+        private void tb_Port_TextChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Client))
+                ChangedElements |= Changed.Client;
+
+            int indexOf = launcher.Servers.Shard.FindIndex(s => !string.IsNullOrEmpty(s.Last) && bool.Parse(s.Last));
+
+            if (indexOf == -1)
+                return;
+
+            launcher.Servers.Shard[indexOf].Port = tb_Port.Text;
+        }
+
+        private void tb_ClientFolder_TextChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Client))
+                ChangedElements |= Changed.Client;
+
+            int indexOf = launcher.Installs.Path.FindIndex(s => !string.IsNullOrEmpty(s.Last) && bool.Parse(s.Last));
+
+            if (indexOf == -1)
+                return;
+
+            launcher.Installs.Path[indexOf].Text = tb_ClientFolder.Text;
+        }
+
+        private void tb_ClientExe_TextChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Client))
+                ChangedElements |= Changed.Client;
+
+            int indexOf = launcher.Clients.Path.FindIndex(s => !string.IsNullOrEmpty(s.Last) && bool.Parse(s.Last));
+
+            if (indexOf == -1)
+                return;
+
+            launcher.Clients.Path[indexOf].Text = tb_ClientExe.Text;
+        }
+
+        private void cb_ClientExeEncryptionEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!LoadedProfile)
+                return;
+            if (!ChangedElements.HasFlag(Changed.Client))
+                ChangedElements |= Changed.Client;
+
+            int indexOf = launcher.Clients.Path.FindIndex(s => !string.IsNullOrEmpty(s.Last) && bool.Parse(s.Last));
+
+            if (indexOf == -1)
+                return;
+
+            launcher.Clients.Path[indexOf].RemoveEncryption = cb_ClientExeEncryptionEnabled.Checked.ToString();
         }
     }
 }
