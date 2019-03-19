@@ -501,7 +501,7 @@ namespace UOSConfigManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                cmessage.Invoke(ex.ToString());
             }
         }
 

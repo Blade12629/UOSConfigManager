@@ -350,7 +350,7 @@ namespace UOSConfigManager
             }
             catch (Exception ex)
             { 
-                Console.WriteLine("Val:" + Val);
+                CMSG("Val:" + Val);
                 Sentry.SentrySdk.CaptureException(ex);
             }
             return newVal;

@@ -103,13 +103,12 @@ namespace UOSConfigManager.UOS
                             serializer.Serialize(fstream, launcher);
                             fstream.Flush();
                         }
-                        Console.WriteLine("Saved to " + destFile.FullName);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Program.CMSG(ex);
             }
         }
     }
