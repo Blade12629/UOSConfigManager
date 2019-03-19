@@ -68,33 +68,48 @@ namespace UOSConfigManager.UOS
 
         public void Write()
         {
-            XmlSerializer serializer;
-            FileInfo destFile;
-
-            switch (Config)
+            try
             {
-                case UOSReader.ConfigType.Profile:
-                    XML.Profile.Profile profile = CfgFile as XML.Profile.Profile;
-                    serializer = new XmlSerializer(typeof(XML.Profile.Profile));
-                    destFile = Program.profiles[ProfileID];
+                XmlSerializer serializer;
+                FileInfo destFile;
 
-                    destFile.CopyTo(destFile.FullName + ".backup");
-                    using (FileStream fstream = destFile.OpenWrite())
-                    {
-                        serializer.Serialize(fstream, profile);
-                    }
+                switch (Config)
+                {
+                    case UOSReader.ConfigType.Profile:
+                        XML.Profile.Profile profile = CfgFile as XML.Profile.Profile;
+                        serializer = new XmlSerializer(typeof(XML.Profile.Profile));
+                        destFile = Program.profiles[ProfileID];
+
+                        if (File.Exists(destFile.FullName + ".backup"))
+                            File.Delete(destFile.FullName + ".backup");
+
+                        destFile.CopyTo(destFile.FullName + ".backup");
+                        using (FileStream fstream = destFile.OpenWrite())
+                        {
+                            serializer.Serialize(fstream, profile);
+                        }
                         break;
-                case UOSReader.ConfigType.Launcher:
-                    XML.Launcher.Launcher launcher = CfgFile as XML.Launcher.Launcher;
-                    serializer = new XmlSerializer(typeof(XML.Launcher.Launcher));
-                    destFile = new FileInfo(new DirectoryInfo(Program.Config.UOSPath).Parent.FullName + @"\launcher.xml");
+                    case UOSReader.ConfigType.Launcher:
+                        XML.Launcher.Launcher launcher = CfgFile as XML.Launcher.Launcher;
+                        serializer = new XmlSerializer(typeof(XML.Launcher.Launcher));
+                        destFile = new FileInfo(new DirectoryInfo(Program.Config.UOSPath).Parent.FullName + @"\launcher.xml");
 
-                    destFile.CopyTo(destFile.FullName + ".backup");
-                    using (FileStream fstream = destFile.OpenWrite())
-                    {
-                        serializer.Serialize(fstream, launcher);
-                    }
-                    break;
+                        if (File.Exists(destFile.FullName + ".backup"))
+                            File.Delete(destFile.FullName + ".backup");
+
+                        destFile.CopyTo(destFile.FullName + ".backup");
+                        using (FileStream fstream = destFile.OpenWrite())
+                        {
+                            serializer.Serialize(fstream, launcher);
+                            fstream.Flush();
+                        }
+                        Console.WriteLine("Saved to " + destFile.FullName);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
         }
     }

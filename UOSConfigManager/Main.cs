@@ -101,7 +101,7 @@ namespace UOSConfigManager
                     int indexOf = launcher.Clients.Path.FindIndex(p => !string.IsNullOrEmpty(p.Last) && bool.Parse(p.Last));
                     tb_ClientExe.Text = launcher.Clients.Path[indexOf].Text;
                     cb_ClientExeEncryptionEnabled.Checked = bool.Parse(launcher.Clients.Path[indexOf].RemoveEncryption);
-                    indexOf = launcher.Installs.Path.FindIndex(p => !string.IsNullOrEmpty(p.Last) && bool.Parse(p.Last));
+                    indexOf = launcher.Clients.Path.FindIndex(p => !string.IsNullOrEmpty(p.Last) && bool.Parse(p.Last));
                     tb_ClientFolder.Text = launcher.Clients.Path[indexOf].Text;
                 }
             }
@@ -470,30 +470,39 @@ namespace UOSConfigManager
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UOS.UOSWriter writer;
-
-            if (ChangedElements.HasFlag(Changed.Client))
+            try
             {
-                writer = new UOS.UOSWriter(launcher, 0, UOS.UOSReader.ConfigType.Launcher);
-                Task.Run(async () =>
-                {
-                    cmessage.Invoke("Saving profile " + ProfileID);
-                    writer.Write();
-                    cmessage.Invoke("Saved profile " + ProfileID);
-                });
-            }
-            else
-            {
-                writer = new UOS.UOSWriter(currentProfile, ProfileID);
-                Task.Run(async () =>
-                {
-                    cmessage.Invoke("Saving config");
-                    writer.Write();
-                    cmessage.Invoke("Saved config");
-                });
-            }
+                UOS.UOSWriter writer;
 
-            MessageBox.Show("Save State", "Successfully saved!");
+                if (ChangedElements.HasFlag(Changed.Client))
+                {
+                    writer = new UOS.UOSWriter(launcher, 0, UOS.UOSReader.ConfigType.Launcher);
+                    Task.Run(async () =>
+                    {
+                        cmessage.Invoke("Saving profile " + ProfileID);
+                        writer.Write();
+                        cmessage.Invoke("Saved profile " + ProfileID);
+                    });
+                }
+                else if (ChangedElements == Changed.None)
+                    return;
+                else
+                {
+                    writer = new UOS.UOSWriter(currentProfile, ProfileID);
+                    Task.Run(async () =>
+                    {
+                        cmessage.Invoke("Saving config");
+                        writer.Write();
+                        cmessage.Invoke("Saved config");
+                    });
+                }
+                ChangedElements = Changed.None;
+                MessageBox.Show("Successfully saved!", "Save State");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private void tb_host_TextChanged(object sender, EventArgs e)

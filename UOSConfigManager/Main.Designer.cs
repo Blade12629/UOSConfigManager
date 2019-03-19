@@ -74,8 +74,6 @@
             this.b_SwitchLAA = new System.Windows.Forms.Button();
             this.cb_LAAEnabled = new System.Windows.Forms.CheckBox();
             this.b_setVM = new System.Windows.Forms.Button();
-            this.b_SetClientExe = new System.Windows.Forms.Button();
-            this.b_ClientFolderSet = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.tb_ClientExe = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -524,8 +522,6 @@
             this.tab_Client.Controls.Add(this.b_SwitchLAA);
             this.tab_Client.Controls.Add(this.cb_LAAEnabled);
             this.tab_Client.Controls.Add(this.b_setVM);
-            this.tab_Client.Controls.Add(this.b_SetClientExe);
-            this.tab_Client.Controls.Add(this.b_ClientFolderSet);
             this.tab_Client.Controls.Add(this.label8);
             this.tab_Client.Controls.Add(this.tb_ClientExe);
             this.tab_Client.Controls.Add(this.label7);
@@ -571,28 +567,6 @@
             this.b_setVM.Text = "Set to\r\nVetus-Mundus\r\nConnection data";
             this.b_setVM.UseVisualStyleBackColor = true;
             this.b_setVM.Click += new System.EventHandler(this.b_setVM_Click);
-            // 
-            // b_SetClientExe
-            // 
-            this.b_SetClientExe.Location = new System.Drawing.Point(468, 113);
-            this.b_SetClientExe.Name = "b_SetClientExe";
-            this.b_SetClientExe.Size = new System.Drawing.Size(111, 23);
-            this.b_SetClientExe.TabIndex = 11;
-            this.b_SetClientExe.Text = "Set Client Exe";
-            this.b_SetClientExe.UseVisualStyleBackColor = true;
-            this.b_SetClientExe.Visible = false;
-            this.b_SetClientExe.Click += new System.EventHandler(this.b_SetClientExe_Click);
-            // 
-            // b_ClientFolderSet
-            // 
-            this.b_ClientFolderSet.Location = new System.Drawing.Point(468, 69);
-            this.b_ClientFolderSet.Name = "b_ClientFolderSet";
-            this.b_ClientFolderSet.Size = new System.Drawing.Size(111, 23);
-            this.b_ClientFolderSet.TabIndex = 10;
-            this.b_ClientFolderSet.Text = "Set Client Folder";
-            this.b_ClientFolderSet.UseVisualStyleBackColor = true;
-            this.b_ClientFolderSet.Visible = false;
-            this.b_ClientFolderSet.Click += new System.EventHandler(this.b_ClientFolderSet_Click);
             // 
             // label8
             // 
@@ -859,7 +833,7 @@
             // cb_ClientExeEncryptionEnabled
             // 
             this.cb_ClientExeEncryptionEnabled.AutoSize = true;
-            this.cb_ClientExeEncryptionEnabled.Location = new System.Drawing.Point(585, 117);
+            this.cb_ClientExeEncryptionEnabled.Location = new System.Drawing.Point(467, 113);
             this.cb_ClientExeEncryptionEnabled.Name = "cb_ClientExeEncryptionEnabled";
             this.cb_ClientExeEncryptionEnabled.Size = new System.Drawing.Size(118, 17);
             this.cb_ClientExeEncryptionEnabled.TabIndex = 15;
@@ -943,8 +917,6 @@
         private System.Windows.Forms.TabPage tab_Dresslist;
         private System.Windows.Forms.TabPage tab_Client;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button b_SetClientExe;
-        private System.Windows.Forms.Button b_ClientFolderSet;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox tb_ClientExe;
         private System.Windows.Forms.Label label7;
